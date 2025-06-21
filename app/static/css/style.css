@@ -1,0 +1,958 @@
+/*:root {*/
+/*    --primary-color: #4e73df;*/
+/*    --secondary-color: #f8f9fc;*/
+/*    --dark-color: #5a5c69;*/
+/*    --light-color: #ffffff;*/
+/*    --user-message-bg: #e3f2fd;*/
+/*    --agent-message-bg: #f8f9fa;*/
+/*}*/
+
+/*body {*/
+/*    font-family: 'Nunito', sans-serif;*/
+/*    background-color: #f8f9fc;*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    height: 100vh;*/
+/*}*/
+
+/*!* Auth Pages *!*/
+/*.auth-container {*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    height: 100vh;*/
+/*    background-color: var(--secondary-color);*/
+/*}*/
+
+/*.auth-card {*/
+/*    background: var(--light-color);*/
+/*    padding: 2rem;*/
+/*    border-radius: 0.5rem;*/
+/*    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);*/
+/*    width: 100%;*/
+/*    max-width: 400px;*/
+/*}*/
+
+/*!* Chat Layout *!*/
+/*.chat-container {*/
+/*    display: flex;*/
+/*    height: 100vh;*/
+/*}*/
+
+/*.sidebar {*/
+/*    width: 300px;*/
+/*    background-color: var(--light-color);*/
+/*    border-right: 1px solid #e3e6f0;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+
+/*.sidebar-header {*/
+/*    padding: 1rem;*/
+/*    border-bottom: 1px solid #e3e6f0;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.sidebar-content {*/
+/*    flex: 1;*/
+/*    overflow-y: auto;*/
+/*    padding: 0.5rem;*/
+/*}*/
+
+/*.sidebar-footer {*/
+/*    padding: 1rem;*/
+/*    border-top: 1px solid #e3e6f0;*/
+/*}*/
+
+/*.chat-area {*/
+/*    flex: 1;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    background-color: var(--secondary-color);*/
+/*}*/
+
+/*.chat-header {*/
+/*    padding: 1rem;*/
+/*    border-bottom: 1px solid #e3e6f0;*/
+/*    background-color: var(--light-color);*/
+/*}*/
+
+/*.chat-messages {*/
+/*    flex: 1;*/
+/*    padding: 1rem;*/
+/*    overflow-y: auto;*/
+/*}*/
+
+/*.chat-input {*/
+/*    padding: 1rem;*/
+/*    border-top: 1px solid #e3e6f0;*/
+/*    background-color: var(--light-color);*/
+/*}*/
+
+/*!* Chat Messages *!*/
+/*.message {*/
+/*    margin-bottom: 1rem;*/
+/*    display: flex;*/
+/*    align-items: flex-start;*/
+/*}*/
+
+/*.message-avatar {*/
+/*    width: 40px;*/
+/*    height: 40px;*/
+/*    border-radius: 50%;*/
+/*    margin-right: 1rem;*/
+/*    object-fit: cover;*/
+/*}*/
+
+/*.message-content {*/
+/*    flex: 1;*/
+/*}*/
+
+/*.message-user {*/
+/*    justify-content: flex-end;*/
+/*}*/
+
+/*.message-agent {*/
+/*    justify-content: flex-start;*/
+/*}*/
+
+/*.message-bubble {*/
+/*    padding: 0.75rem 1rem;*/
+/*    border-radius: 1rem;*/
+/*    max-width: 70%;*/
+/*    word-wrap: break-word;*/
+/*}*/
+
+/*.user-bubble {*/
+/*    background-color: var(--user-message-bg);*/
+/*    border-top-right-radius: 0;*/
+/*}*/
+
+/*.agent-bubble {*/
+/*    background-color: var(--agent-message-bg);*/
+/*    border-top-left-radius: 0;*/
+/*}*/
+
+/*.message-info {*/
+/*    font-size: 0.75rem;*/
+/*    color: var(--dark-color);*/
+/*    margin-top: 0.25rem;*/
+/*}*/
+
+/*!* Chat Session List *!*/
+/*.chat-session {*/
+/*    padding: 0.75rem;*/
+/*    margin-bottom: 0.5rem;*/
+/*    border-radius: 0.35rem;*/
+/*    cursor: pointer;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.chat-session:hover {*/
+/*    background-color: #f0f3ff;*/
+/*}*/
+
+/*.chat-session.active {*/
+/*    background-color: var(--primary-color);*/
+/*    color: white;*/
+/*}*/
+
+/*.chat-session-delete {*/
+/*    color: #e74a3b;*/
+/*    background: none;*/
+/*    border: none;*/
+/*    padding: 0;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.chat-session.active .chat-session-delete {*/
+/*    color: white;*/
+/*}*/
+
+
+/*!* Add these new styles *!*/
+/*.chat-messages {*/
+/*    padding: 20px;*/
+/*    background-color: #f5f5f5;*/
+/*    border-radius: 8px;*/
+/*    margin-bottom: 10px;*/
+/*    height: calc(100vh - 200px);*/
+/*    overflow-y: auto;*/
+/*}*/
+
+/*.message {*/
+/*    margin-bottom: 15px;*/
+/*    animation: fadeIn 0.3s ease-in-out;*/
+/*}*/
+
+/*@keyframes fadeIn {*/
+/*    from { opacity: 0; transform: translateY(10px); }*/
+/*    to { opacity: 1; transform: translateY(0); }*/
+/*}*/
+
+/*.message-bubble {*/
+/*    padding: 12px 16px;*/
+/*    border-radius: 18px;*/
+/*    box-shadow: 0 1px 2px rgba(0,0,0,0.1);*/
+/*    max-width: 80%;*/
+/*    line-height: 1.4;*/
+/*}*/
+
+/*.user-bubble {*/
+/*    background-color: #4e73df;*/
+/*    color: white;*/
+/*    margin-left: auto;*/
+/*    border-bottom-right-radius: 4px;*/
+/*}*/
+
+/*.agent-bubble {*/
+/*    background-color: white;*/
+/*    border: 1px solid #eaeaea;*/
+/*    border-bottom-left-radius: 4px;*/
+/*}*/
+
+/*.chat-input {*/
+/*    position: sticky;*/
+/*    bottom: 0;*/
+/*    background: white;*/
+/*    padding: 15px;*/
+/*    border-top: 1px solid #eee;*/
+/*    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);*/
+/*}*/
+
+/*#messageInput {*/
+/*    border-radius: 20px;*/
+/*    padding: 12px 20px;*/
+/*    border: 1px solid #ddd;*/
+/*}*/
+
+/*!* Typing indicator *!*/
+/*.typing-indicator {*/
+/*    display: flex;*/
+/*    padding: 10px 15px;*/
+/*    background: white;*/
+/*    border-radius: 18px;*/
+/*    margin-bottom: 15px;*/
+/*    width: fit-content;*/
+/*    box-shadow: 0 1px 2px rgba(0,0,0,0.1);*/
+/*}*/
+
+/*.typing-indicator span {*/
+/*    height: 8px;*/
+/*    width: 8px;*/
+/*    background: #ccc;*/
+/*    border-radius: 50%;*/
+/*    display: inline-block;*/
+/*    margin: 0 2px;*/
+/*    animation: bounce 1.5s infinite ease-in-out;*/
+/*}*/
+
+/*.typing-indicator span:nth-child(2) {*/
+/*    animation-delay: 0.2s;*/
+/*}*/
+
+/*.typing-indicator span:nth-child(3) {*/
+/*    animation-delay: 0.4s;*/
+/*}*/
+
+/*@keyframes bounce {*/
+/*    0%, 60%, 100% { transform: translateY(0); }*/
+/*    30% { transform: translateY(-5px); }*/
+/*}*/
+
+/*!* Responsive *!*/
+/*@media (max-width: 768px) {*/
+/*    .chat-container {*/
+/*        flex-direction: column;*/
+/*    }*/
+
+/*    .sidebar {*/
+/*        width: 100%;*/
+/*        height: 200px;*/
+/*    }*/
+
+/*    .chat-area {*/
+/*        height: calc(100vh - 200px);*/
+/*    }*/
+/*}*/
+
+/*#voiceInputBtn {*/
+/*    !* Make it rounded (often circular for microphone icons) *!*/
+/*    border-radius: 50%; !* This makes it a perfect circle if width and height are equal, or a pill shape *!*/
+
+/*    !* Set the background color to blue *!*/
+/*    background-color: #007bff; !* This is the standard Bootstrap primary blue. You can choose any blue hex code. *!*/
+
+/*    !* Ensure text/icon color is visible on blue (e.g., white) *!*/
+/*    color: #fff; !* White color for the microphone icon *!*/
+
+/*    !* Optional: Remove the default outline-secondary border and box-shadow if they conflict *!*/
+/*    border: 1px solid #007bff; !* Match border to background or remove it *!*/
+/*    box-shadow: none; !* Remove any default box-shadow *!*/
+/*}*/
+
+/*!* If you want to change the hover/active state colors *!*/
+/*#voiceInputBtn:hover {*/
+/*    background-color: #0056b3; !* A slightly darker blue on hover *!*/
+/*    border-color: #0056b3;*/
+/*    color: #fff; !* Keep icon white on hover *!*/
+/*}*/
+
+/*#voiceInputBtn:focus {*/
+/*    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5); !* Bootstrap-like focus outline for accessibility *!*/
+/*}*/
+
+/*.gradient-custom-2 {*/
+/*    !* fallback for old browsers *!*/
+/*    background: #48c6ef;*/
+
+/*    !* Chrome 10-25, Safari 5.1-6 *!*/
+/*    background: -webkit-linear-gradient(to top, rgba(72,198,239,0.5), rgba(111,134,214,0.5));*/
+
+/*    !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+/*    background: linear-gradient(to top, rgba(72,198,239,0.5), rgba(111,134,214,0.5))*/
+/*  }*/
+
+/*@media (min-width: 768px) {*/
+/*.gradient-form {*/
+/*height: 100vh !important;*/
+/*}*/
+/*}*/
+/*@media (min-width: 769px) {*/
+/*.gradient-custom-2 {*/
+/*border-top-right-radius: .3rem;*/
+/*border-bottom-right-radius: .3rem;*/
+/*}*/
+/*}*/
+
+
+/*!* In your static/css/style.css *!*/
+
+/*!* For the gradient button specifically *!*/
+/*.gradient-custom-2.btn {*/
+/*    !* Existing styles for size from previous step (adjust as needed) *!*/
+/*    padding: 0.8rem 1.5rem;*/
+/*    min-height: 48px;*/
+/*    font-size: 1.1rem;*/
+/*    display: block; !* Ensure it takes full width when w-100 is applied *!*/
+
+/*    !* New styles for text centering and color *!*/
+/*    color: #000 !important; !* Make text black, use !important to override Bootstrap/MDB default *!*/
+/*    text-align: center; !* Ensure text is centered *!*/
+/*    white-space: nowrap; !* Prevents text from wrapping if it gets too long *!*/
+/*}*/
+
+/*!* Other existing styles from your media queries *!*/
+/*@media (min-width: 768px) {*/
+/*    .gradient-form {*/
+/*        height: 100vh !important;*/
+/*    }*/
+/*}*/
+/*@media (min-width: 769px) {*/
+/*    .gradient-custom-2 {*/
+/*        border-top-right-radius: .3rem;*/
+/*        border-bottom-right-radius: .3rem;*/
+/*    }*/
+/*}*/
+
+/*
+   Full Custom CSS File: style.css
+   (Previous content remains, new/modified rules are highlighted)
+*/
+
+:root {
+    /* Custom Color Palette */
+    --primary-color: #4e73df; /* Your primary brand blue */
+    --secondary-color: #f8f9fc;
+    --dark-color: #5a5c69;
+    --light-color: #ffffff;
+
+    /* Message Bubble Colors */
+    --user-message-bg: var(--primary-color);
+    --agent-message-bg: #40444b;
+
+    /* Dark Theme Specific Colors */
+    --sidebar-bg-dark: #2c2f33;
+    --chat-area-bg-dark: #36393f;
+    --chat-header-bg-dark: #23272a;
+    --border-dark: #40444b;
+    --text-light-on-dark: #dcddde;
+    --text-muted-on-dark: #9da0aa;
+
+    /* NEW: Consistent Border Radius Variable */
+    --input-border-radius: 25px; /* Adjust this value for more or less rounding */
+
+    /* NEW: Logout Button Colors */
+    --danger-color: #dc3545; /* Standard Bootstrap red */
+    --danger-color-hover: #c82333; /* Darker red on hover */
+}
+
+/* --- Base Body Styles --- */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--chat-area-bg-dark);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    color: var(--text-light-on-dark);
+}
+
+/* --- Auth Pages Layout --- */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--chat-area-bg-dark);
+}
+
+.auth-card {
+    background: var(--light-color);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    width: 100%;
+    max-width: 400px;
+    color: var(--dark-color);
+}
+
+
+/* --- Main Chat Layout --- */
+.chat-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 300px;
+    background-color: var(--sidebar-bg-dark);
+    border-right: 1px solid var(--border-dark);
+    display: flex;
+    flex-direction: column;
+    color: var(--text-light-on-dark);
+}
+
+.sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--chat-header-bg-dark);
+}
+
+.sidebar-header h4 {
+    color: var(--light-color);
+    margin-bottom: 0;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-dark);
+    background-color: var(--chat-header-bg-dark);
+}
+
+.sidebar-footer .form-check-label {
+    color: var(--text-light-on-dark);
+}
+
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--chat-area-bg-dark);
+}
+
+.chat-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-dark);
+    background-color: var(--chat-header-bg-dark);
+    color: var(--light-color);
+}
+
+.chat-header h4 {
+    margin-bottom: 0;
+}
+
+/* Specific styling for chat messages container */
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    background-color: var(--chat-area-bg-dark);
+    border-radius: 0;
+    margin-bottom: 0;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+/* Welcome Message */
+.welcome-message {
+    text-align: center;
+    padding: 5rem 0;
+    margin-top: 8rem;
+}
+
+.welcome-message h4 {
+    color: var(--text-light-on-dark);
+}
+
+.chat-input {
+    position: sticky;
+    bottom: 0;
+    background: var(--chat-header-bg-dark);
+    padding: 1rem;
+    border-top: 1px solid var(--border-dark);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+}
+
+/* --- Chat Messages Styling --- */
+.message {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.message-content {
+    flex: 1;
+}
+
+.message-user {
+    justify-content: flex-end;
+}
+
+.message-agent {
+    justify-content: flex-start;
+}
+
+/* --- Chat Messages Styling --- */
+
+/* General message bubble roundness */
+.message-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 1rem; /* Changed from 1rem to make them less rounded overall */
+    max-width: 70%;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    line-height: 1.4;
+}
+
+.user-bubble {
+    background-color: var(--user-message-bg);
+    color: white;
+    margin-left: auto;
+    /* Adjusted specific corner radii for less roundness */
+    border-radius: 1rem; /* Keep this corner less rounded */
+}
+
+.agent-bubble {
+    background-color: var(--agent-message-bg);
+    border: 1px solid var(--border-dark);
+    color: var(--text-light-on-dark);
+    border-radius: 1rem;
+}
+
+.message-info {
+    font-size: 0.75rem;
+    color: var(--text-muted-on-dark);
+    margin-top: 0.25rem;
+}
+
+/* --- Chat Session List --- */
+.chat-session {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-light-on-dark);
+}
+
+.chat-session:hover {
+    background-color: var(--border-dark);
+}
+
+.chat-session.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.chat-session-delete {
+    color: #e74a3b;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.chat-session.active .chat-session-delete {
+    color: white;
+}
+
+/* --- Input Area Elements (Modified) --- */
+#messageInput {
+    border-radius: var(--input-border-radius); /* Use new variable for consistency */
+    padding: 9px 20px;
+    background-color: #40444b;
+    color: var(--text-light-on-dark);
+    border: 1px solid var(--border-dark);
+    flex-grow: 1; /* Allow input to take available space */
+}
+
+#messageInput::placeholder {
+    color: var(--text-muted-on-dark);
+    opacity: 1;
+}
+
+/* Spacing and Alignment for Input Group Buttons */
+.chat-input .input-group {
+    align-items: center; /* Vertically aligns items in the input group */
+}
+
+/* Add margin to buttons AFTER the input field or previous button */
+#voiceInputBtn, #sendMessageBtn {
+    margin-left: 10px; /* Spacing between input and mic, and mic and send */
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: flex;
+    padding: 10px 15px;
+    background: var(--agent-message-bg);
+    border-radius: 18px;
+    margin-bottom: 15px;
+    width: fit-content;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background: var(--text-muted-on-dark);
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 2px;
+    animation: bounce 1.5s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+}
+
+/* --- Specific Button Styles (Overrides) --- */
+
+/* New Chat button in sidebar */
+#newChatBtn {
+    border-radius: 20px; /* Specific radius for this button */
+    padding: 5px;
+    margin: 20px;
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    border-color: var(--primary-color);
+    text-align: center; /* Ensure text is centered if it spans multiple lines */
+    display: block; /* Make it block level for proper margins/padding */
+}
+
+#newChatBtn:hover {
+    background-color: #3f60b5;
+    border-color: #3f60b5;
+    color: var(--light-color);
+}
+#newChatBtn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Logout button (same as New Chat button, but red) */
+#logoutBtn {
+    border-radius: 20px; /* Same radius as New Chat button */
+    padding: 5px;
+    margin-top: 8px; /* Small margin above it */
+    background-color: var(--danger-color);
+    color: var(--light-color);
+    border-color: var(--danger-color);
+    text-align: center;
+    display: block; /* Make it block level */
+    width: 100%; /* Take full width of its container */
+}
+
+#logoutBtn:hover {
+    background-color: var(--danger-color-hover);
+    border-color: var(--danger-color-hover);
+    color: var(--light-color);
+}
+#logoutBtn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); /* Focus shadow for red */
+}
+
+
+/* Voice Input button in chat input (Modified) */
+#voiceInputBtn {
+    border-radius: var(--input-border-radius); /* Use new variable for consistency */
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    border: 1px solid var(--primary-color);
+    width: 40px; /* Fixed width for circle */
+    height: 40px; /* Fixed height for circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    box-shadow: none;
+    flex-shrink: 0;
+}
+
+#voiceInputBtn:hover {
+    background-color: #3f60b5;
+    border-color: #3f60b5;
+    color: var(--light-color);
+}
+
+#voiceInputBtn:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Send Message button (Modified) */
+/* Send Message button (Modified) */
+#sendMessageBtn {
+    border-radius: var(--input-border-radius); /* Use new variable for consistency */
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--light-color);
+    /* NEW: Add width, height, and padding for circular shape */
+    width: 40px; /* Make it the same size as the voice input button */
+    height: 40px; /* Make it the same size as the voice input button */
+    padding: 0; /* Remove default padding to allow width/height to define size */
+    /* Ensure icon is centered */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Prevent it from shrinking */
+}
+#sendMessageBtn:hover {
+    background-color: #3f60b5;
+    border-color: #3f60b5;
+    color: var(--light-color);
+}
+#sendMessageBtn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Sidebar Toggle button (for mobile) */
+#sidebarToggle {
+    background-color: var(--border-dark);
+    color: var(--text-light-on-dark);
+    border-color: var(--border-dark);
+}
+#sidebarToggle:hover {
+    background-color: #50545a;
+    border-color: #50545a;
+}
+#sidebarToggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(64, 68, 75, 0.5);
+}
+
+/* --- Auth Page Gradient Styles --- */
+.gradient-custom-2 {
+    background: #48c6ef;
+    background: -webkit-linear-gradient(to top, rgba(72,198,239,0.5), rgba(111,134,214,0.5));
+    background: linear-gradient(to top, rgba(72,198,239,0.5), rgba(111,134,214,0.5));
+}
+
+.gradient-custom-2.btn {
+    padding: 0.8rem 1.5rem;
+    min-height: 48px;
+    font-size: 1.1rem;
+    display: block;
+    color: #000 !important;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .chat-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: 200px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-dark);
+    }
+
+    .chat-area {
+        height: calc(100vh - 200px);
+    }
+}
+
+@media (min-width: 768px) {
+    .gradient-form {
+        height: 100vh !important;
+    }
+}
+@media (min-width: 769px) {
+    .gradient-custom-2 {
+        border-top-right-radius: .3rem;
+        border-bottom-right-radius: .3rem;
+    }
+}
+
+
+/* app/static/css/style.css */
+
+/* ... (your existing CSS rules) ... */
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.modal.active {
+    display: flex; /* Show when active */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be responsive */
+    max-width: 500px; /* Max width */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#imageFileInput {
+    margin: 20px 0;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.image-preview-container {
+    width: 100%;
+    max-height: 300px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    border: 1px dashed #ccc;
+    background-color: #f9f9f9;
+    min-height: 100px; /* Provide some height even if no image */
+}
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 100%;
+    display: block; /* Ensures it doesn't leave extra space */
+    object-fit: contain; /* Keeps aspect ratio */
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.modal-buttons .button-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-buttons .button-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal-buttons .button-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modal-buttons .button-secondary:hover {
+    background-color: #5a6268;
+}
+
+.speak-message-icon {
+    margin-left: 10px;
+}

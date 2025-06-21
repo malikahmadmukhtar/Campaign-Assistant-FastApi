@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="h-100 gradient-form" style="background-color: #97a4bd;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-xl-10">
+                <div class="card rounded-3 text-black">
+                    <div class="row g-0">
+                        {# Left Column: Form Elements Only #}
+                        <div class="col-lg-6">
+                            <div class="card-body p-md-5 mx-md-4">
+                                <h2 class="text-center mb-4">Register</h2>
+                                <form id="registerForm">
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="name">Name</label>
+                                        <input type="text" id="name" class="form-control" required />
+                                    </div>
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="email">Email</label>
+                                        <input type="email" id="email" class="form-control" required />
+                                    </div>
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="password">Password</label>
+                                        <input type="password" id="password" class="form-control" required />
+                                    </div>
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="confirmPassword">Confirm Password</label>
+                                        <input type="password" id="confirmPassword" class="form-control" required />
+                                    </div>
+                                    <div data-mdb-input-init class="form-outline mb-2">
+                                        <label class="form-label" for="accessToken">Access Token</label>
+                                        <input type="text" id="accessToken" class="form-control" required/>
+                                    </div>
+
+                                   <div class="text-center pt-1 mb-5 pb-1">
+                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary fa-lg gradient-custom-2 mb-2 w-50 mx-auto d-block" type="submit">Register</button>
+                                    </div>
+                                </form>
+                                <div class="d-flex align-items-center justify-content-center pb-4">
+                                    <p class="mb-0 me-2">Already have an account?</p>
+                                    <a href="/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-danger">Login</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Right Column: Logo, Name, and Promotional Text #}
+                        <div class="col-lg-6 d-flex align-items-center justify-content-center gradient-custom-2">
+                            <div class="text-black px-3 py-4 p-md-5 mx-md-4 text-center"> {# Added text-center here #}
+                                <img src="/static/images/meta.png"
+                                    style="width: 185px;" alt="logo" class="mb-4"> {# Added mb-4 for spacing #}
+                                <h4 class="mb-4" style="font-size: 2rem;">Meta Campaign Assistant</h4>
+                                <p class="small mb-0" style="font-size: 1rem;">Your personal smart campaign assistant</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
+        alert('Passwords do not match');
+        return;
+    }
+
+    const userData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        confirm_password: document.getElementById('confirmPassword').value,
+        access_token: document.getElementById('accessToken').value
+    };
+
+    try {
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (response.ok) {
+            alert('Registration successful! Please login.');
+            window.location.href = '/';
+        } else {
+            const error = await response.json();
+            alert(error.detail || 'Registration failed');
+        }
+    } catch (err) {
+        console.error('Error:', err);
+        alert('An error occurred during registration');
+    }
+});
+</script>
+{% endblock %}

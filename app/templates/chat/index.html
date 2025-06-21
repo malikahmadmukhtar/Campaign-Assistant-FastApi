@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="chat-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4>Meta Assistant</h4>
+        </div>
+<!--        <div style="font-size: 1.2em; color: #ffffff; margin-top: 5px; margin-left: 20px"></div>-->
+
+            <div id="loggedInUser" style="font-size: 1.3em; color: #ffffff; margin-top: 10px; margin-left: 20px"></div>
+
+            <button id="newChatBtn" class="btn btn-sm btn-primary" style="border-radius: 20px; padding: 5px; margin: 20px">
+                <i class="fas fa-plus"></i> Start New Chat
+            </button>
+        <div class="form-check form-switch" style="margin-left: 20px;margin-top: 20px;margin-bottom: 20px">
+                <input class="form-check-input" type="checkbox" id="speechToggle">
+                <label class="form-check-label" for="speechToggle">🔈 Voice Mode</label>
+        </div>
+        <button id="stopSpeechBtn" class="btn btn-secondary" style="border-radius: 20px; padding: 5px; margin: 2px">Stop Speech</button>
+
+        <div style="margin: 20px; font-style: unset">
+            <h5 style="font-weight: bold">Previous Chats</h5>
+        </div>
+
+
+        <div class="sidebar-content" id="chatSessions">
+            <!-- Chat sessions will be loaded here -->
+
+
+        </div>
+        <div class="sidebar-footer">
+
+            <button id="logoutBtn" class="btn btn-sm btn-danger mt-1">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Main Chat Area -->
+    <!-- Update the chat-area div -->
+    <div class="chat-area">
+        <div class="chat-header d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-secondary me-2 d-md-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h4 id="chatTitle" class="mb-0">New Chat</h4>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome message -->
+            <div class="welcome-message text-center py-5">
+                <img src="/static/images/meta.png" alt="AI Assistant" class="mb-3" width="100">
+                <h4>How can I help you today?</h4>
+                <p>Start by sending a message</p>
+            </div>
+        </div>
+        <div class="chat-input">
+            <div class="input-group">
+                <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                <button class="btn" id="voiceInputBtn" title="Voice Input">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="btn btn-primary" id="sendMessageBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="imageUploadModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Upload Image</h2>
+        <input type="file" id="imageFileInput" accept="image/jpeg, image/png, image/gif">
+        <div class="image-preview-container">
+            <img id="imagePreview" src="#" alt="Image Preview" style="display: none;">
+        </div>
+        <div class="modal-buttons">
+            <button id="uploadImageConfirmButton" class="button-primary">Upload</button>
+            <button id="cancelImageUploadButton" class="button-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+    <div id="facebookImageUploadModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="facebookModalCloseButton">&times;</span>
+        <h2>Upload Creative Image to Facebook</h2>
+        <input type="file" id="facebookImageFileInput" accept="image/jpeg, image/png">
+        <div class="image-preview-container">
+            <img id="facebookImagePreview" src="#" alt="Facebook Image Preview" style="display: none;">
+        </div>
+        <div class="modal-buttons">
+            <button id="uploadFacebookImageConfirmButton" class="button-primary">Upload to Facebook</button>
+            <button id="cancelFacebookImageUploadButton" class="button-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
