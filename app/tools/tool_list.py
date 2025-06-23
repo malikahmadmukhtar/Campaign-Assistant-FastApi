@@ -1,3 +1,6 @@
+from app.tools.extras.image_tool import generate_image_tool
+from app.tools.extras.user_info import get_user_info
+from app.tools.extras.web_search import tavily_web_search_tool
 from app.tools.facebook.accounts import get_facebook_business_accounts, get_facebook_ad_accounts
 from app.tools.facebook.ad_creatives import fetch_existing_creatives, \
     delete_facebook_ad_creative, start_creative_creation
@@ -38,5 +41,9 @@ declared_tool_list=[
     delete_facebook_campaign,
     delete_facebook_ad_set,
     delete_facebook_ad_creative,
-    delete_facebook_ad
+    delete_facebook_ad,
+
+    get_user_info,
+    generate_image_tool,
+    tavily_web_search_tool
 ]

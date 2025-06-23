@@ -48,4 +48,3 @@ def get_last_n_chat_messages(db: Session, session_id: int, n: int = 20):
 
 def format_messages_for_context(messages: list[ChatMessage]) -> str:
     return "\n".join([f"{msg.sender}: {msg.content}" for msg in messages])
-

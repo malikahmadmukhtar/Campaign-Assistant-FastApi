@@ -239,6 +239,7 @@ async def read_register(request: Request):
 async def read_chat(request: Request):
     return templates.TemplateResponse("chat/index.html", {"request": request})
 
+
 # NEW: Endpoint to get the current logged-in user's details
 @app.get("/user/me", response_model=dict)
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
@@ -359,3 +360,8 @@ async def upload_image(
         )
 
     return {"message": "Image uploaded successfully", "image_hash": image_hash}
+
+
+@app.get("/prompt-generator", response_class=HTMLResponse)
+async def prompt_generator(request: Request):
+    return templates.TemplateResponse("prompt_generator.html", {"request": request})

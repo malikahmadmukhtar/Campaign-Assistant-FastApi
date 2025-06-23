@@ -11,6 +11,7 @@ TEMPERATURE = 0.5
 fb_access_token = os.getenv("FB_ACCESS_TOKEN")
 fb_base_url = os.getenv("FB_BASE_URL")
 
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"

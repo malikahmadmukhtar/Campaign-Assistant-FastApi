@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Setup event delegation for chat session clicks and deletes ONLY ONCE
     setupChatSessionClickHandler();
 
     marked.setOptions({
@@ -24,10 +25,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatSessions = document.getElementById('chatSessions');
     const chatTitle = document.getElementById('chatTitle');
     const stopSpeechBtn = document.getElementById('stopSpeechBtn');
-    const loggedInUserElement = document.getElementById('loggedInUser'); // NEW: Get reference to the element for logged-in user
+    const loggedInUserElement = document.getElementById('loggedInUser');
 
-   // --- NEW GLOBAL DOM ELEMENTS FOR MODAL ---
-    const chatInput = document.getElementById('messageInput'); // Make sure your chat input has id="messageInput"
+    // --- GLOBAL DOM ELEMENTS FOR MODAL ---
+    const chatInput = document.getElementById('messageInput');
     const imageUploadModal = document.getElementById('imageUploadModal');
     const imageFileInput = document.getElementById('imageFileInput');
     const imagePreview = document.getElementById('imagePreview');
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelImageUploadButton = document.getElementById('cancelImageUploadButton');
     const modalCloseButton = imageUploadModal.querySelector('.close-button');
 
-    // dom elements for facebook modal
+    // DOM elements for facebook modal
     const facebookImageUploadModal = document.getElementById('facebookImageUploadModal');
     const facebookImageFileInput = document.getElementById('facebookImageFileInput');
     const facebookImagePreview = document.getElementById('facebookImagePreview');
@@ -48,19 +49,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let recognition = null;
     let synth = window.speechSynthesis;
     let speechEnabled = false;
-    let pendingMessages = {};
 
 
-        function updateStopSpeechButtonVisibility() {
+    function updateStopSpeechButtonVisibility() {
         if (stopSpeechBtn) {
             if (synth.speaking) {
-                stopSpeechBtn.style.display = 'inline-block'; // Or 'block', depending on your layout
+                stopSpeechBtn.style.display = 'inline-block';
             } else {
                 stopSpeechBtn.style.display = 'none';
             }
         }
     }
-    synth.onvoiceschanged = updateStopSpeechButtonVisibility; // This often fires on load
+    synth.onvoiceschanged = updateStopSpeechButtonVisibility;
     synth.onstart = updateStopSpeechButtonVisibility;
     synth.onend = updateStopSpeechButtonVisibility;
     synth.onerror = updateStopSpeechButtonVisibility;
@@ -75,9 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const transcript = event.results[0][0].transcript;
             messageInput.value = transcript;
         };
-        // NEW: Automatically send message when speech recognition ends
         recognition.onend = function() {
-            if (messageInput.value.trim() !== '') { // Only send if there's actual input
+            if (messageInput.value.trim() !== '') {
                 sendMessage();
             }
         };
@@ -96,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('Speech synthesis not supported');
     }
 
-    // Load chat sessions
+    // Load chat sessions for the sidebar
     async function loadChatSessions() {
         try {
             const response = await fetch('/chat/sessions', {
@@ -116,16 +115,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
     async function displayLoggedInUser() {
         const token = localStorage.getItem('access_token');
         if (!token) {
-            loggedInUserElement.textContent = 'Guest'; // Or hide, or redirect
+            loggedInUserElement.textContent = 'Guest';
             return;
         }
 
         try {
-            // This is the new endpoint we just created in FastAPI
             const response = await fetch('/user/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -134,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 const userData = await response.json();
-                // Your FastAPI endpoint returns 'name', so we use that here.
                 if (userData.name) {
                     loggedInUserElement.textContent = `Welcome ${userData.name}`;
                 } else {
@@ -154,96 +150,87 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
-
-    // Render chat sessions
+    // Render chat sessions in the sidebar
+    // This function only builds the sidebar elements, it does NOT add individual click listeners
     function renderChatSessions(sessions) {
-        chatSessions.innerHTML = '';
+        chatSessions.innerHTML = ''; // Clear existing session list
 
         sessions.forEach(session => {
             const sessionElement = document.createElement('div');
             sessionElement.className = `chat-session ${session.id === currentSessionId ? 'active' : ''}`;
+            // Store session ID using a data-attribute for event delegation
+            sessionElement.dataset.sessionId = session.id;
+
             sessionElement.innerHTML = `
                 <div class="session-title">${session.title}</div>
                 <button class="chat-session-delete" data-id="${session.id}">
                     <i class="fas fa-trash"></i>
                 </button>
             `;
-
-            sessionElement.addEventListener('click', () => loadChatSession(session.id));
-
-            const deleteBtn = sessionElement.querySelector('.chat-session-delete');
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteChatSession(session.id);
-            });
-
             chatSessions.appendChild(sessionElement);
         });
     }
 
     function showTypingIndicator() {
-    const typingElement = document.createElement('div');
-    typingElement.className = 'message message-agent';
-    typingElement.innerHTML = `
-        <img src="/static/images/bot-avatar.png" class="message-avatar" alt="Agent Avatar">
-        <div class="message-content">
-            <div class="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+        const typingElement = document.createElement('div');
+        typingElement.className = 'message message-agent';
+        typingElement.innerHTML = `
+            <img src="/static/images/bot-avatar.png" class="message-avatar" alt="Agent Avatar">
+            <div class="message-content">
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
-        </div>
-    `;
-    chatMessages.appendChild(typingElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    return typingElement;
-}
-
-    // Load a chat session
-    // Update the loadChatSession function
-    async function loadChatSession(sessionId) {
-    try {
-        // Clear any pending messages for this session
-        if (pendingMessages[sessionId]) {
-            delete pendingMessages[sessionId];
-        }
-
-        currentSessionId = sessionId;
-        chatMessages.innerHTML = '';
-
-        const response = await fetch(`/chat/sessions/${sessionId}`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            }
-        });
-
-        if (response.ok) {
-            const messages = await response.json();
-
-            // Update chat title
-            const sessions = await fetchChatSessions();
-            const session = sessions.find(s => s.id === sessionId);
-            if (session) {
-                chatTitle.textContent = session.title;
-            }
-
-            renderMessages(messages);
-            updateActiveSessionInSidebar(sessionId);
-        } else {
-            throw new Error('Failed to load chat session');
-        }
-    } catch (error) {
-        console.error('Error loading chat session:', error);
-        showError('Failed to load chat. Please try again.');
+        `;
+        chatMessages.appendChild(typingElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return typingElement;
     }
-}
 
-    // New helper function
+    // Load a chat session by ID (clears existing messages and loads specific session)
+    async function loadChatSession(sessionId) {
+        try {
+            currentSessionId = sessionId;
+            console.log('Clearing chat messages for session:', sessionId); // Debugging line
+            chatMessages.innerHTML = ''; // Crucial for clearing previous chat history
+
+            const response = await fetch(`/chat/sessions/${sessionId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                }
+            });
+
+            if (response.ok) {
+                const messages = await response.json();
+
+                // Update chat title
+                const sessions = await fetchChatSessions(); // Re-fetch sessions to find the title
+                const session = sessions.find(s => s.id === sessionId);
+                if (session) {
+                    chatTitle.textContent = session.title;
+                }
+
+                // Render all messages for the loaded session
+                messages.forEach(message => appendMessageToChat(message));
+                updateActiveSessionInSidebar(sessionId);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+            } else {
+                throw new Error('Failed to load chat session');
+            }
+        } catch (error) {
+            console.error('Error loading chat session:', error);
+            showError('Failed to load chat. Please try again.');
+        }
+    }
+
+    // Helper function to update active session in sidebar
     function updateActiveSessionInSidebar(sessionId) {
         document.querySelectorAll('.chat-session').forEach(el => {
             el.classList.remove('active');
-            if (el.querySelector('.chat-session-delete')?.dataset.id === String(sessionId)) {
+            // Check the data-sessionId attribute, not the delete button's data-id
+            if (el.dataset.sessionId === String(sessionId)) {
                 el.classList.add('active');
             }
         });
@@ -264,10 +251,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 if (currentSessionId === sessionId) {
                     currentSessionId = null;
-                    chatTitle.textContent = 'New Chat';
-                    chatMessages.innerHTML = '';
+                    chatTitle.textContent = 'New Chat'; // Set title to New Chat
+                    chatMessages.innerHTML = ''; // Clear chat when current session is deleted
                 }
-                loadChatSessions();
+                loadChatSessions(); // Reload sidebar sessions
             } else {
                 console.error('Failed to delete chat session');
             }
@@ -278,91 +265,109 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Create a new chat session
     async function createNewChatSession() {
-    try {
-        const response = await fetch('/chat/sessions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ title: "New Chat" })
-        });
+        try {
+            const response = await fetch('/chat/sessions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: "New Chat"
+                })
+            });
 
-        if (response.ok) {
-            const session = await response.json();
-            currentSessionId = session.id;
-            chatMessages.innerHTML = '';
-            loadChatSessions();
-            return session;
-        } else {
-            console.error('Failed to create new chat session');
+            if (response.ok) {
+                const session = await response.json();
+                currentSessionId = session.id;
+                chatMessages.innerHTML = ''; // Clear existing messages for a new chat
+                chatTitle.textContent = 'New Chat'; // Set initial title for a new chat
+                loadChatSessions(); // Reload sidebar to show new chat
+                updateActiveSessionInSidebar(currentSessionId); // Highlight the new chat in sidebar
+                return session;
+            } else {
+                console.error('Failed to create new chat session');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error creating new chat session:', error);
             return null;
         }
-    } catch (error) {
-        console.error('Error creating new chat session:', error);
-        return null;
     }
-}
 
-// ... (rest of your existing code) ...
+    // Helper function to append a single message to the chat interface
+    function appendMessageToChat(message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${message.sender === 'user' ? 'message-user' : 'message-agent'}`;
 
-    function renderMessages(messages) {
-        if (messages.length > 0) {
-            chatMessages.innerHTML = '';
+        let renderedContent = DOMPurify.sanitize(marked.parse(message.content));
+        let uploadButtonHtml = '';
+        const UPLOAD_PLACEHOLDER = '[[AD_UPLOAD_IMAGE]]';
+        const FACEBOOK_UPLOAD_PLACEHOLDER = '[[CREATIVE_UPLOAD_IMAGE]]';
+
+        let formattedDate = ''; // Initialize formattedDate
+
+        if (message.created_at) {
+            const date = new Date(message.created_at);
+            if (!isNaN(date)) { // Check if the date is valid
+                formattedDate = date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    hour12: true // This sets it to 12-hour format with AM/PM
+                });
+            } else {
+                formattedDate = 'Invalid Date';
+            }
+        } else {
+            formattedDate = 'No Date Available'; // Or some other default text
         }
 
-        messages.forEach(message => {
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${message.sender === 'user' ? 'message-user' : 'message-agent'}`;
-
-            let renderedContent = DOMPurify.sanitize(marked.parse(message.content));
-            let uploadButtonHtml = '';
-            const UPLOAD_PLACEHOLDER = '[[AD_UPLOAD_IMAGE]]';
-            const FACEBOOK_UPLOAD_PLACEHOLDER = '[[CREATIVE_UPLOAD_IMAGE]]';
-
-
-            if (message.sender === 'agent') {
-                if (renderedContent.includes(UPLOAD_PLACEHOLDER)) {
-                    renderedContent = renderedContent.replace(UPLOAD_PLACEHOLDER, '');
-                    uploadButtonHtml = `<button class="upload-image-button" style="border-radius: 15px; background-color: #007bff; color: white">Upload Product Image</button>`;
-                }
-                if (renderedContent.includes(FACEBOOK_UPLOAD_PLACEHOLDER)) {
-                renderedContent = renderedContent.replace(FACEBOOK_UPLOAD_PLACEHOLDER, ''); // Remove placeholder
-                // Add button for Facebook upload
+        if (message.sender === 'agent') {
+            if (renderedContent.includes(UPLOAD_PLACEHOLDER)) {
+                renderedContent = renderedContent.replace(UPLOAD_PLACEHOLDER, '');
+                uploadButtonHtml = `<button class="upload-image-button" style="border-radius: 15px; background-color: #007bff; color: white">Upload Product Image</button>`;
+            }
+            if (renderedContent.includes(FACEBOOK_UPLOAD_PLACEHOLDER)) {
+                renderedContent = renderedContent.replace(FACEBOOK_UPLOAD_PLACEHOLDER, '');
                 uploadButtonHtml += `<button class="upload-facebook-image-button" style="border-radius: 15px; background-color: #007bff; color: white">Upload Creative Image (Facebook)</button>`;
             }
 
-                messageElement.innerHTML = `
-                    <img src="/static/images/bot-avatar.png" class="message-avatar" alt="Agent Avatar">
-                    <div class="message-content" style="max-width: 1000px;">
-                        <div class="message-bubble agent-bubble">
-                            ${renderedContent}
-                            ${uploadButtonHtml} </div>
-                        <div class="message-info">
-                            ${new Date(message.created_at).toLocaleString()}
-                            <span class="speak-message-icon" data-text="${message.content}" title="Speak message" style="cursor: pointer">🔊</span>
-                        </div>
+            messageElement.innerHTML = `
+                <img src="/static/images/bot-avatar.png" class="message-avatar" alt="Agent Avatar">
+                <div class="message-content" style="max-width: 1000px;">
+                    <div class="message-bubble agent-bubble">
+                        ${renderedContent}
+                        ${uploadButtonHtml}
                     </div>
-                `;
-            } else {
-                messageElement.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-bubble user-bubble">${renderedContent}</div>
-                        <div class="message-info">${new Date(message.created_at).toLocaleString()}</div>
+                    <div class="message-info">
+                        ${formattedDate}
+                        <span class="speak-message-icon" data-text="${message.content}" title="Speak message" style="cursor: pointer">🔊</span>
                     </div>
-                    <img src="/static/images/user-avatar.png" class="message-avatar" alt="User Avatar">
-                `;
-            }
+                </div>
+            `;
+        } else {
+            messageElement.innerHTML = `
+                <div class="message-content">
+                    <div class="message-bubble user-bubble">${renderedContent}</div>
+                    <div class="message-info">${formattedDate}</div>
+                </div>
+                <img src="/static/images/user-avatar.png" class="message-avatar" alt="User Avatar">
+            `;
+        }
 
-            chatMessages.appendChild(messageElement);
-        });
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Add event listeners for the speak-message-icons
-        document.querySelectorAll('.speak-message-icon').forEach(icon => {
-            icon.addEventListener('click', (e) => {
+        const speakIcon = messageElement.querySelector('.speak-message-icon');
+        if (speakIcon) {
+            speakIcon.addEventListener('click', (e) => {
                 const textToSpeak = e.target.dataset.text;
                 if (textToSpeak) {
-                   const cleanedTextForManualSpeech = cleanTextForSpeech(textToSpeak);
+                    const cleanedTextForManualSpeech = cleanTextForSpeech(textToSpeak);
                     if (synth.speaking) {
                         synth.cancel();
                     }
@@ -373,42 +378,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateStopSpeechButtonVisibility();
                 }
             });
-        });
+        }
 
-        // NEW: Add event listeners for the upload image buttons (MODIFIED PART)
-        // This button now only calls the modal open function
-        document.querySelectorAll('.upload-image-button').forEach(button => {
-            button.addEventListener('click', () => {
-                openImageUploadModal();
-            });
-        });
-        document.querySelectorAll('.upload-facebook-image-button').forEach(button => {
-        button.addEventListener('click', () => {
-            openFacebookImageUploadModal(); // Calls the function to open the Facebook modal
-        });
-    });
+        const uploadProductButton = messageElement.querySelector('.upload-image-button');
+        if (uploadProductButton) {
+            uploadProductButton.addEventListener('click', openImageUploadModal);
+        }
 
-        if (messages.length > 0) {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+        const uploadFacebookButton = messageElement.querySelector('.upload-facebook-image-button');
+        if (uploadFacebookButton) {
+            uploadFacebookButton.addEventListener('click', openFacebookImageUploadModal);
         }
     }
-    // --- END MODIFIED renderMessages function ---
-
 
     // --- NEW FUNCTIONS AND EVENT HANDLERS FOR IMAGE UPLOAD MODAL ---
 
     // Function to open the image upload modal
-        function openImageUploadModal() {
-            imageUploadModal.classList.add('active');
-            imageFileInput.value = ''; // Clear any previously selected file
-            imagePreview.style.display = 'none'; // Hide preview
-            imagePreview.src = '#'; // Clear preview source
-        }
+    function openImageUploadModal() {
+        imageUploadModal.classList.add('active');
+        imageFileInput.value = ''; // Clear any previously selected file
+        imagePreview.style.display = 'none'; // Hide preview
+        imagePreview.src = '#'; // Clear preview source
+    }
 
-        // Function to close the image upload modal
-        function closeImageUploadModal() {
-            imageUploadModal.classList.remove('active');
-        }
+    // Function to close the image upload modal
+    function closeImageUploadModal() {
+        imageUploadModal.classList.remove('active');
+    }
 
     // Event listener for file input change (to show preview)
     imageFileInput.addEventListener('change', (event) => {
@@ -528,10 +524,10 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('file', file);
 
         try {
-            const response = await fetch('/upload-creative-image', { // NEW FACEBOOK ENDPOINT
+            const response = await fetch('/upload-creative-image', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Correct key
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                 },
                 body: formData
             });
@@ -542,8 +538,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
-            // The image_url returned here will be the placeholder URL containing the hash
-            // const imageUrl = data.image_url;
             let imageUrl = data.image_hash;
 
             if (imageUrl) {
@@ -572,181 +566,107 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-// Render messages
-//         function renderMessages(messages) {
-//         if (messages.length > 0) {
-//             chatMessages.innerHTML = '';
-//         }
-//
-//         messages.forEach(message => {
-//             const messageElement = document.createElement('div');
-//             messageElement.className = `message ${message.sender === 'user' ? 'message-user' : 'message-agent'}`;
-//
-//             let renderedContent = DOMPurify.sanitize(marked.parse(message.content));
-//
-//             let uploadButtonHtml = '';
-//             uploadButtonHtml = `
-//                     <button class="upload-image-button" data-message-id="${message.id}">Upload Image</button>
-//                 `;
-//             const UPLOAD_PLACEHOLDER = '[[AD_UPLOAD_IMAGE]]';
-//
-//             if (message.sender === 'agent') {
-//
-//                 if (renderedContent.includes(UPLOAD_PLACEHOLDER)) {
-//                 // Remove the placeholder from the displayed content
-//                 renderedContent = renderedContent.replace(UPLOAD_PLACEHOLDER, uploadButtonHtml);
-//                 // Add the button HTML
-//
-//             }
-//
-//                 messageElement.innerHTML = `
-//                     <img src="/static/images/bot-avatar.png" class="message-avatar" alt="Agent Avatar">
-// <!--                    can be changed   -->
-//                     <div class="message-content" style="max-width: 1000px;">
-//                         <div class="message-bubble agent-bubble">${renderedContent}</div>
-//                         <div class="message-info">
-//                             ${new Date(message.created_at).toLocaleString()}
-//                             <span class="speak-message-icon" data-text="${message.content}" title="Speak message" style="cursor: pointer">🔊</span>
-//                         </div>
-//                     </div>
-//                 `;
-//             } else {
-//                 messageElement.innerHTML = `
-//                     <div class="message-content">
-//                         <div class="message-bubble user-bubble">${renderedContent}</div>
-//                         <div class="message-info">${new Date(message.created_at).toLocaleString()}</div>
-//                     </div>
-//                     <img src="/static/images/user-avatar.png" class="message-avatar" alt="User Avatar">
-//                 `;
-//             }
-//
-//             chatMessages.appendChild(messageElement);
-//         });
-//
-//         // NEW: Add event listeners for the speak-message-icons after rendering
-//         document.querySelectorAll('.speak-message-icon').forEach(icon => {
-//             icon.addEventListener('click', (e) => {
-//                 const textToSpeak = e.target.dataset.text;
-//                 if (textToSpeak) {
-//                    const cleanedTextForManualSpeech = cleanTextForSpeech(textToSpeak);
-//                     if (synth.speaking) { // Cancel current speech if any
-//                         synth.cancel();
-//                     }
-//                     const utterance = new SpeechSynthesisUtterance(cleanedTextForManualSpeech);
-//                     utterance.onend = () => updateStopSpeechButtonVisibility();
-//                     utterance.onerror = () => updateStopSpeechButtonVisibility();
-//                     synth.speak(utterance);
-//                     updateStopSpeechButtonVisibility(); // Show stop button immediately
-//                 }
-//             });
-//         });
-//
-//         document.querySelectorAll('.upload-image-button').forEach(button => {
-//         button.addEventListener('click', (e) => {
-//             const messageId = e.target.dataset.messageId;
-//             // Place your image upload logic here.
-//             // For example, trigger a hidden file input click:
-//             // document.getElementById('yourHiddenFileInputId').click();
-//             alert(`Upload image for message ID: ${messageId}. Implement your upload logic here!`);
-//         });
-//     });
-//
-//         if (messages.length > 0) {
-//             chatMessages.scrollTop = chatMessages.scrollHeight;
-//         }
-//     }
-
-// ... (rest of your existing code) ...
-
-    // Send a message
-    // Update the sendMessage function
-    // Modify the sendMessage function
     // Send a message
     let creatingSession = false;
 
     async function sendMessage() {
-    const content = messageInput.value.trim();
-    if (!content || creatingSession) return;
+        const content = messageInput.value.trim();
+        if (!content || creatingSession) return;
 
-    // Disable input while processing
-    messageInput.disabled = true;
-    sendMessageBtn.disabled = true;
+        // Disable input while processing
+        messageInput.disabled = true;
+        sendMessageBtn.disabled = true;
 
-    try {
-        if (!currentSessionId) {
-            creatingSession = true;
-            const session = await createNewChatSession();
-            creatingSession = false;
+        try {
+            if (!currentSessionId) {
+                creatingSession = true;
+                const session = await createNewChatSession();
+                creatingSession = false;
 
-            if (!session) {
-                showError('Failed to start a new chat session.');
-                return;
+                if (!session) {
+                    showError('Failed to start a new chat session.');
+                    return;
+                }
+                currentSessionId = session.id;
+                chatTitle.textContent = session.title;
             }
-            currentSessionId = session.id;
-            chatTitle.textContent = session.title;
-        }
 
-        const messageId = Date.now();
-        pendingMessages[currentSessionId] = messageId;
+            const userMessage = {
+                sender: 'user',
+                content,
+                created_at: new Date().toISOString()
+            };
 
-        const userMessage = {
-            sender: 'user',
-            content,
-            created_at: new Date().toISOString()
-        };
+            // RENDER USER MESSAGE IMMEDIATELY
+            appendMessageToChat(userMessage);
+            messageInput.value = '';
 
-        renderMessages([userMessage]);
-        messageInput.value = '';
+            const typingElement = showTypingIndicator();
 
-        const typingElement = showTypingIndicator();
+            const response = await fetch(`/chat/messages/${currentSessionId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content
+                })
+            });
 
-        const response = await fetch(`/chat/messages/${currentSessionId}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content })
-        });
+            // REMOVE TYPING INDICATOR BEFORE RENDERING AGENT MESSAGE
+            if (typingElement && chatMessages.contains(typingElement)) {
+                chatMessages.removeChild(typingElement);
+            }
 
-        chatMessages.removeChild(typingElement);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Server error processing message.');
+            }
 
-        if (!response.ok) throw new Error('Server error');
+            const agentMessage = await response.json();
 
-        const agentMessage = await response.json();
+            // Ensure agentMessage has a created_at timestamp
+            if (!agentMessage.created_at) {
+                agentMessage.created_at = new Date().toISOString(); // Assign current time if missing
+            }
 
-        if (pendingMessages[currentSessionId] === messageId) {
-            await loadChatSession(currentSessionId);
+            // Append the agent's message directly
+            appendMessageToChat(agentMessage);
 
             if (speechEnabled && window.speechSynthesis) {
-            const cleanedSpeechText = cleanTextForSpeech(agentMessage.content);
-            const utterance = new SpeechSynthesisUtterance(cleanedSpeechText);
-                // utterance.onend = () => updateStopSpeechButtonVisibility(); // Crucial: update when this specific utterance ends
-                 utterance.onend = () => {
+                const cleanedSpeechText = cleanTextForSpeech(agentMessage.content);
+                const utterance = new SpeechSynthesisUtterance(cleanedSpeechText);
+                utterance.onend = () => {
                     updateStopSpeechButtonVisibility();
-                    // NEW: Start listening again after speech ends, if speech is enabled
                     if (speechEnabled && recognition) {
                         recognition.start();
                     }
                 };
-                utterance.onerror = () => updateStopSpeechButtonVisibility(); // Also on error
+                utterance.onerror = () => updateStopSpeechButtonVisibility();
                 window.speechSynthesis.speak(utterance);
-                updateStopSpeechButtonVisibility(); // Show button immediately after speaking starts
+                updateStopSpeechButtonVisibility();
             }
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+            // Ensure typing indicator is removed even on error
+            const existingTypingIndicator = chatMessages.querySelector('.typing-indicator')?.closest('.message');
+            if (existingTypingIndicator && chatMessages.contains(existingTypingIndicator)) {
+                chatMessages.removeChild(existingTypingIndicator);
+            }
+            showError('Sorry, there was an error processing your message. ' + error.message);
+        } finally {
+            messageInput.disabled = false;
+            sendMessageBtn.disabled = false;
+            messageInput.focus();
+            creatingSession = false;
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom in finally block
         }
-    } catch (error) {
-        console.error('Error sending message:', error);
-        showError('Sorry, there was an error processing your message.');
-    } finally {
-        messageInput.disabled = false;
-        sendMessageBtn.disabled = false;
-        messageInput.focus();
-        creatingSession = false;
     }
-}
 
 
-    // New helper function
+    // Helper function to display errors in the chat area
     function showError(message) {
         const errorElement = document.createElement('div');
         errorElement.className = 'alert alert-danger';
@@ -754,91 +674,61 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.appendChild(errorElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-    // Add this helper function
+
+    // Helper function to fetch chat sessions (used by loadChatSession and displayLoggedInUser)
     async function fetchChatSessions() {
-    const response = await fetch('/chat/sessions', {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-    });
-    return response.ok ? await response.json() : [];
+        const response = await fetch('/chat/sessions', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+        return response.ok ? await response.json() : [];
     }
 
 
-    // Update how chat sessions are loaded when clicked
+    // Use event delegation for handling clicks on chat sessions and delete buttons
+    // This function is called ONCE at DOMContentLoaded
     function setupChatSessionClickHandler() {
         document.getElementById('chatSessions').addEventListener('click', async (e) => {
             const sessionElement = e.target.closest('.chat-session');
             if (sessionElement) {
-                const sessionId = parseInt(sessionElement.querySelector('.chat-session-delete').dataset.id);
-
-                // Clear any pending messages for the previous session
-                if (currentSessionId && pendingMessages[currentSessionId]) {
-                    delete pendingMessages[currentSessionId];
+                // Check if the click was specifically on the delete button
+                const deleteButton = e.target.closest('.chat-session-delete');
+                if (deleteButton) {
+                    e.stopPropagation(); // Prevent loading session if delete button was clicked
+                    const sessionId = parseInt(deleteButton.dataset.id);
+                    deleteChatSession(sessionId);
+                } else {
+                    // It was a click on the session div itself (but not the delete button)
+                    const sessionId = parseInt(sessionElement.dataset.sessionId);
+                    await loadChatSession(sessionId);
                 }
-
-                await loadChatSession(sessionId);
             }
         });
     }
 
-    // --- ADD THIS NEW FUNCTION ---
+    // Function to clean text for speech synthesis
     function cleanTextForSpeech(text) {
-
         let safeText = text.replace(/[^\x20-\x7E]+/g, " ").trim();
 
-          // Remove numbers with 6 or more digits
+        // Remove numbers with 6 or more digits
         let safeTextWithoutNumbers = safeText.replace(/\b\d{6,}\b/g, "");
 
-          // Remove URLs
+        // Remove URLs
         const urlPattern = /(?:https?:\/\/|www\.)\S+|(?:(?:[a-zA-Z0-9-]+\.)+[a-z]{2,})\/\S*/g;
         let safeTextWithoutUrls = safeTextWithoutNumbers.replace(urlPattern, "");
 
-          // Convert to JSON string (for JavaScript safety)
-        // 1. Decode potential HTML entities (if your text might come from HTML)
-        // This isn't strictly necessary if your backend already gives you plain text,
-        // but it's good for robustness if any HTML entities like &amp; sneak in.
-        // const tempDiv = document.createElement('div');
-        // tempDiv.innerHTML = text;
-        // text = tempDiv.textContent || tempDiv.innerText || '';
-
-        // 2. Normalize whitespace: Replace multiple whitespace characters with a single space.
-        // text = text.replace(/\s+/g, ' ').trim();
-        // // 3. Remove non-printable ASCII characters (like your original \x20-\x7E)
-        // // We'll use a regex that matches characters outside the common printable ASCII range.
-        // text = text.replace(/[^\x20-\x7E]+/g, ' ');
-        // // 4. Remove URLs: Improved regex for URLs.
-        // // This regex attempts to be more robust, including various TLDs and paths.
-        // const urlPattern = /(?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*|(?:ftp:\/\/|file:\/\/)[^\s]*|\b\S+\.(com|org|net|gov|edu|io|co|uk|pk|info|biz|dev|app|ai|me)\b(?:\/\S*)?/gi;
-        // text = text.replace(urlPattern, ' ');
-        // // 5. Remove long sequences of numbers (6 or more digits)
-        // const longNumberPattern = /\b\d{6,}\b/g;
-        // text = text.replace(longNumberPattern, ' ');
-        // // 6. Remove email addresses
-        // const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-        // text = text.replace(emailPattern, ' ');
-        // text = text.replace(/[<>/\\\[\]{}|`~@#$%^&*+=_:;"]/g, ' '); // Removed single quote from here, as it might be part of contractions
-        // text = text.replace(/Dr\./g, 'Doctor ');
-        // text = text.replace(/Mr\./g, 'Mister ');
-        // text = text.replace(/Mrs\./g, 'Misses ');
-        // text = text.replace(/Ms\./g, 'Miz ');
-        // text = text.replace(/e\.g\./g, 'for example ');
-        // text = text.replace(/i\.e\./g, 'that is ');
-
-        // text = text.replace(/\s+/g, ' ').trim();
-
-        return JSON.stringify(safeTextWithoutUrls);
+        return safeTextWithoutUrls; // Return the cleaned text directly
     }
-    // --- END OF NEW FUNCTION ---
 
 
-    // Event listeners
+    // Event listeners for UI interactions
 
     sendMessageBtn.addEventListener('click', () => {
         if (sendMessageBtn.disabled) return;
         sendMessageBtn.disabled = true;
         sendMessage();
-        });
+    });
 
 
     if (voiceInputBtn) {
@@ -848,17 +738,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-        if (stopSpeechBtn) {
+    if (stopSpeechBtn) {
         stopSpeechBtn.addEventListener('click', () => {
             if (synth && synth.speaking) {
                 synth.cancel();
                 console.log('Speech stopped.');
-                updateStopSpeechButtonVisibility(); // Update visibility after stopping
+                updateStopSpeechButtonVisibility();
             }
         });
     }
 
-    // newChatBtn.addEventListener('click', createNewChatSession);
     console.log('DOMContentLoaded fired, setting up event listeners');
     newChatBtn.addEventListener('click', function() {
         console.log('New Chat Button Clicked - Event Listener Fired!');
@@ -876,24 +765,28 @@ document.addEventListener('DOMContentLoaded', function() {
             synth.cancel();
             console.log('Speech stopped because toggle was turned off.');
         }
-        updateStopSpeechButtonVisibility(); // Update visibility immediately
-
+        updateStopSpeechButtonVisibility();
     });
 
     document.getElementById('messageInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-
-            // Disable to prevent double Enter press
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             if (sendMessageBtn.disabled) return;
             sendMessageBtn.disabled = true;
             sendMessage();
         }
     });
 
-    // Initialize
+    // Initialize on page load
     if (window.location.pathname === '/chat') {
-        loadChatSessions();
+        loadChatSessions(); // This will load the sidebar sessions
         displayLoggedInUser();
+        // REMOVED: The block that automatically loads the most recent chat session.
+        // Now, the chat area will be empty upon refresh until a user interacts.
+
+        // Ensure the chat title reflects "New Chat" and the area is clear
+        // chatTitle.textContent = 'New Chat';
+        // chatMessages.innerHTML = '';
+        // currentSessionId = null; // Ensure no session is actively selected
     }
 });

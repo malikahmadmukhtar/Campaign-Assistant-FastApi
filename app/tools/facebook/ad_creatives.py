@@ -149,16 +149,18 @@ def finalize_creative_upload(creative_info):
 
     payload = {
         "name": creative_info["name"],
-        "object_story_spec": json.dumps({
+        "object_story_spec": {
             "page_id": creative_info["page_id"],
             "link_data": link_data
-        }),
+        },
         "access_token": fb_access_token
     }
 
     try:
-        res = requests.post(url, data=payload)
+        res = requests.post(url, json=payload)
         res.raise_for_status()
         return res.json().get("id")
     except requests.RequestException as e:
-        return f"Error creating creative: {str(e)}"
+        print("Response Body:", res.text)
+        print(f"Error creating creative: {str(e)}")
+        return f"Error creating creative: {str(e)}error{res.text}"

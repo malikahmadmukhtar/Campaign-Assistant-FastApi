@@ -21,3 +21,4 @@ soundfile
 groq
 elevenlabs
 cloudinary
+langchain-community

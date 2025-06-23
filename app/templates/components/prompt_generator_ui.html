@@ -1,0 +1,324 @@
+<!-- app/templates/prompt_generator/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Prompt Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 280px;
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a202c;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-item:hover {
+            background-color: #f7fafc;
+            color: #3182ce;
+        }
+        .nav-item.active {
+            background-color: #e0f2fe;
+            color: #2b6cb0;
+            font-weight: 600;
+        }
+        .nav-item i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2d3748;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: #f7fafc;
+            color: #2d3748;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+            outline: none;
+        }
+        .button-primary {
+            background-color: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+        }
+        .button-primary:hover {
+            background-color: #3182ce;
+        }
+        .prompt-output {
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #2d3748;
+            position: relative;
+        }
+        .copy-button {
+            background-color: #48bb78;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+        }
+        .copy-button:hover {
+            background-color: #38a169;
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                border-radius: 0.75rem 0.75rem 0 0;
+                padding-bottom: 1rem;
+            }
+            .sidebar-header {
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="layout flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                Ad Prompts
+            </div>
+            <nav class="flex-grow">
+                <div class="nav-item active" data-form="campaign">
+                    <i class="fas fa-bullhorn"></i> Campaign
+                </div>
+                <div class="nav-item" data-form="adset">
+                    <i class="fas fa-layer-group"></i> Ad Set
+                </div>
+                <div class="nav-item" data-form="ad">
+                    <i class="fas fa-ad"></i> Ad
+                </div>
+            </nav>
+            <div class="mt-auto">
+                <a href="/chat" class="nav-item mt-4">
+                    <i class="fas fa-comments"></i> Back to Chat
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content flex-1">
+            <h1 class="text-3xl font-bold text-gray-800">Generate Ad Prompts</h1>
+
+            <!-- Campaign Form -->
+            <div id="campaignForm" class="card">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Campaign Prompt</h2>
+                <div class="form-group">
+                    <label for="campaignName">Campaign Name:</label>
+                    <input type="text" id="campaignName" class="form-input" placeholder="e.g., Summer Sale Campaign">
+                </div>
+                <div class="form-group">
+                    <label for="campaignObjective">Objective:</label>
+                    <select id="campaignObjective" class="form-select">
+                        <option value="">Select Objective</option>
+                        <option value="OUTCOME_AWARENESS">Awareness</option>
+                        <option value="OUTCOME_TRAFFIC">Traffic</option>
+                        <option value="OUTCOME_ENGAGEMENT">Engagement</option>
+                        <option value="OUTCOME_LEADS">Leads</option>
+                        <option value="OUTCOME_APP_PROMOTION">App Promotion</option>
+                        <option value="OUTCOME_SALES">Sales</option>
+                        <option value="OUTCOME_LOCAL_AWARENESS">Local Awareness</option>
+                        <option value="OUTCOME_VIDEO_VIEWS">Video Views</option>
+                    </select>
+                </div>
+                <button id="generateCampaignPrompt" class="button-primary">Generate Campaign Prompt</button>
+            </div>
+
+            <!-- Ad Set Form -->
+            <div id="adsetForm" class="card hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Ad Set Prompt</h2>
+                <div class="form-group">
+                    <label for="adsetName">Ad Set Name:</label>
+                    <input type="text" id="adsetName" class="form-input" placeholder="e.g., Retargeting Audience US">
+                </div>
+                <div class="form-group">
+                    <label for="dailyBudget">Daily Budget (in cents, min 1000):</label>
+                    <input type="number" id="dailyBudget" class="form-input" min="1000" value="1000">
+                </div>
+                <div class="form-group">
+                    <label for="billingEvent">Billing Event:</label>
+                    <select id="billingEvent" class="form-select">
+                        <option value="">Select Billing Event</option>
+                        <option value="IMPRESSIONS">Impressions</option>
+                        <option value="LINK_CLICKS">Link Clicks</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="optimizationGoal">Optimization Goal:</label>
+                    <select id="optimizationGoal" class="form-select">
+                        <option value="">Select Optimization Goal</option>
+                        <option value="LINK_CLICKS">Link Clicks</option>
+                        <option value="REACH">Reach</option>
+                        <option value="IMPRESSIONS">Impressions</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bidStrategy">Bid Strategy:</label>
+                    <select id="bidStrategy" class="form-select">
+                        <option value="">Select Bid Strategy</option>
+                        <option value="LOWEST_COST_WITHOUT_CAP">Lowest Cost Without Cap</option>
+                        <option value="COST_CAP">Cost Cap</option>
+                        <option value="BID_CAP">Bid Cap</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adsetStatus">Status:</label>
+                    <select id="adsetStatus" class="form-select">
+                        <option value="PAUSED">Paused</option>
+                        <option value="ACTIVE">Active</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="countries">Countries (comma-separated codes, e.g., US,GB,FR):</label>
+                    <input type="text" id="countries" class="form-input" placeholder="e.g., US,GB">
+                </div>
+                <div class="form-group">
+                    <label for="ageMin">Minimum Age (13-65):</label>
+                    <input type="number" id="ageMin" class="form-input" min="13" max="65" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="ageMax">Maximum Age (13-65):</label>
+                    <input type="number" id="ageMax" class="form-input" min="13" max="65" value="65">
+                </div>
+                <div class="form-group">
+                    <label for="interests">Interests (comma-separated keywords, bot will search for IDs):</label>
+                    <input type="text" id="interests" class="form-input" placeholder="e.g., technology, fashion, sports">
+                </div>
+                <div class="form-group">
+                    <label for="behaviors">Behaviors (comma-separated keywords, bot will search for IDs):</label>
+                    <input type="text" id="behaviors" class="form-input" placeholder="e.g., engaged shoppers, mobile gamers">
+                </div>
+                <button id="generateAdsetPrompt" class="button-primary">Generate Ad Set Prompt</button>
+            </div>
+
+            <!-- Ad Form -->
+            <div id="adForm" class="card hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Ad Prompt</h2>
+                <div class="form-group">
+                    <label for="adName">Ad Name:</label>
+                    <input type="text" id="adName" class="form-input" placeholder="e.g., Summer Collection Ad">
+                </div>
+                <div class="form-group flex items-center space-x-2">
+                    <label for="isCatalogAd" class="mb-0">Is Catalog Ad?</label>
+                    <input type="checkbox" id="isCatalogAd" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+
+                </div>
+                <div class="form-group" id="templateUrlGroup" style="display: none;">
+                    <label for="templateUrl">Template URL (for Catalog Ads):</label>
+                    <input type="url" id="templateUrl" class="form-input" placeholder="e.g., https://yourstore.com/products">
+                </div>
+                <div class="form-group">
+                    <label for="adStatus">Status:</label>
+                    <select id="adStatus" class="form-select">
+                        <option value="PAUSED">Paused</option>
+                        <option value="ACTIVE">Active</option>
+                    </select>
+                </div>
+                <button id="generateAdPrompt" class="button-primary">Generate Ad Prompt</button>
+            </div>
+
+            <!-- Prompt Output Area -->
+            <div id="promptOutputCard" class="card hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Generated Prompt</h2>
+                <div class="prompt-output relative">
+                    <pre id="generatedPrompt" class="pr-20"></pre>
+                    <button id="copyPromptBtn" class="copy-button">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/prompt_generator.js"></script>
+</body>
+</html>
