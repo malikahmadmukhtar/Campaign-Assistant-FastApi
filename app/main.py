@@ -1,7 +1,7 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Request, Depends, HTTPException
-from fastapi import File, UploadFile, status, HTTPException
+from fastapi import FastAPI, Request, Depends
+from fastapi import File, UploadFile, HTTPException
 
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles

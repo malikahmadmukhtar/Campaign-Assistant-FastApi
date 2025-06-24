@@ -372,6 +372,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         synth.cancel();
                     }
                     const utterance = new SpeechSynthesisUtterance(cleanedTextForManualSpeech);
+                    const voices = synth.getVoices();
+                     const siriVoice = voices.find(voice =>
+                            voice.name === "Samantha (English (United States))" && voice.lang === "en-US" && voice.localService === true
+                        );
+                     utterance.voice = siriVoice;
                     utterance.onend = () => updateStopSpeechButtonVisibility();
                     utterance.onerror = () => updateStopSpeechButtonVisibility();
                     synth.speak(utterance);
@@ -637,6 +642,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (speechEnabled && window.speechSynthesis) {
                 const cleanedSpeechText = cleanTextForSpeech(agentMessage.content);
                 const utterance = new SpeechSynthesisUtterance(cleanedSpeechText);
+                                    const voices = synth.getVoices();
+                     const siriVoice = voices.find(voice =>
+                            voice.name === "Samantha (English (United States))" && voice.lang === "en-US" && voice.localService === true
+                        );
+                     utterance.voice = siriVoice;
                 utterance.onend = () => {
                     updateStopSpeechButtonVisibility();
                     if (speechEnabled && recognition) {

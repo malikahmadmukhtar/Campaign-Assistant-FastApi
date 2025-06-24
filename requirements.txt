@@ -12,8 +12,6 @@ pydantic
 starlette
 python-multipart
 bcrypt
-
-
 requests
 langchain-core
 PyAudio

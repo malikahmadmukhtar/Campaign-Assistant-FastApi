@@ -1,6 +1,5 @@
 from langchain.tools import tool
 from langchain_community.tools.tavily_search import TavilySearchResults
-
 from app.config.settings import TAVILY_API_KEY
 
 # Instantiate Tavily tool once (reuse for efficiency)

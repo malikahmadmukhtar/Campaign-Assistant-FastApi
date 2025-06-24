@@ -37,7 +37,7 @@ declared_tool_list=[
     get_facebook_ads,
     fetch_facebook_page_ids,
 
-    delete_facebook_catalog, ##new
+    delete_facebook_catalog,
     delete_facebook_campaign,
     delete_facebook_ad_set,
     delete_facebook_ad_creative,
