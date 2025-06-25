@@ -9,7 +9,8 @@
         </div>
 <!--        <div style="font-size: 1.2em; color: #ffffff; margin-top: 5px; margin-left: 20px"></div>-->
 
-            <div id="loggedInUser" style="font-size: 1.3em; color: #ffffff; margin-top: 10px; margin-left: 20px"></div>
+            <div id="loggedInUser" style="font-size: 1.3em; color: #DCDDDEFF; margin-top: 10px; margin-left: 20px"></div>
+            <div id="loggedInUserMail" style="font-size: 0.8em; color: #caccda; margin-top: 0; margin-left: 20px"></div>
 
             <button id="newChatBtn" class="btn btn-sm btn-primary" style="border-radius: 20px; padding: 5px">
                 <i class="fas fa-plus"></i> Start New Chat
@@ -55,10 +56,16 @@
         </div>
         <div class="chat-messages" id="chatMessages">
             <!-- Welcome message -->
-            <div class="welcome-message text-center py-5">
-                <img src="/static/images/meta.png" alt="AI Assistant" class="mb-3" width="100">
+            <div class="welcome-message text-center py-2">
+                <img src="/static/images/meta.png" alt="AI Assistant" class="mb-2" width="100">
+                <div id="userWelcome" style="font-size: 1.3em; margin-top: 10px; margin-left: 20px"></div>
                 <h4>How can I help you today?</h4>
-                <p>Start by sending a message</p>
+                <p style="margin-top: 90px; font-size: 1.2em">Try asking me</p>
+                <ul style="list-style: none; margin: 0; padding: 0; display: inline-flex; gap: 30px;">
+                  <li style="white-space: nowrap;">- Let's see our campaigns</li>
+                  <li style="white-space: nowrap;">- How's the weather in Lahore?</li>
+                </ul>
+                <p style="margin-top: 10px">- Show me my products</p>
             </div>
         </div>
         <div class="chat-input">

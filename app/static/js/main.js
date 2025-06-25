@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatTitle = document.getElementById('chatTitle');
     const stopSpeechBtn = document.getElementById('stopSpeechBtn');
     const loggedInUserElement = document.getElementById('loggedInUser');
+    const loggedInUserMailElement = document.getElementById('loggedInUserMail');
+    const userWelcomeElement = document.getElementById('userWelcome');
+
 
     // --- GLOBAL DOM ELEMENTS FOR MODAL ---
     const chatInput = document.getElementById('messageInput');
@@ -133,6 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const userData = await response.json();
                 if (userData.name) {
                     loggedInUserElement.textContent = `Welcome ${userData.name}`;
+                    loggedInUserMailElement.textContent= userData.email;
+                    userWelcomeElement.textContent = `Hey, ${userData.name}`
                 } else {
                     loggedInUserElement.textContent = 'User (Name Not Found)';
                 }
