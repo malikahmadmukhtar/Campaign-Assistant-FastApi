@@ -1,114 +1,133 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="chat-container">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h4>Meta Assistant</h4>
-        </div>
-<!--        <div style="font-size: 1.2em; color: #ffffff; margin-top: 5px; margin-left: 20px"></div>-->
-
-            <div id="loggedInUser" style="font-size: 1.3em; color: #DCDDDEFF; margin-top: 10px; margin-left: 20px"></div>
-            <div id="loggedInUserMail" style="font-size: 0.8em; color: #caccda; margin-top: 0; margin-left: 20px"></div>
-
-            <button id="newChatBtn" class="btn btn-sm btn-primary" style="border-radius: 20px; padding: 5px">
-                <i class="fas fa-plus"></i> Start New Chat
-            </button>
-
-            <a href="/prompt-generator" class="btn btn-sm btn-primary" style="border-radius: 20px; padding: 5px; margin-left: 20px; margin-right: 20px; color: white; text-decoration: none;">
-                ✨ Prompt Generator
-            </a>
-
-        <div class="form-check form-switch" style="margin-left: 20px;margin-top: 20px;margin-bottom: 20px">
-                <input class="form-check-input" type="checkbox" id="speechToggle">
-                <label class="form-check-label" for="speechToggle">🔈 Voice Mode</label>
-        </div>
-        <button id="stopSpeechBtn" class="btn btn-secondary" style="border-radius: 20px; padding: 5px; margin: 2px">Stop Speech</button>
-
-        <div style="margin: 20px; font-style: unset">
-            <h5 style="font-weight: bold">Previous Chats</h5>
-        </div>
-
-
-        <div class="sidebar-content" id="chatSessions">
-            <!-- Chat sessions will be loaded here -->
-
-
-        </div>
-        <div class="sidebar-footer">
-
-            <button id="logoutBtn" class="btn btn-sm btn-danger mt-1">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-    </div>
-
-
-    <!-- Main Chat Area -->
-    <!-- Update the chat-area div -->
-    <div class="chat-area">
-        <div class="chat-header d-flex align-items-center">
-            <button class="btn btn-sm btn-outline-secondary me-2 d-md-none" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h4 id="chatTitle" class="mb-0">New Chat</h4>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-            <!-- Welcome message -->
-            <div class="welcome-message text-center py-2">
-                <img src="/static/images/meta.png" alt="AI Assistant" class="mb-2" width="100">
-                <div id="userWelcome" style="font-size: 1.3em; margin-top: 10px; margin-left: 20px"></div>
-                <h4>How can I help you today?</h4>
-                <p style="margin-top: 90px; font-size: 1.2em">Try asking me</p>
-                <ul style="list-style: none; margin: 0; padding: 0; display: inline-flex; gap: 30px;">
-                  <li style="white-space: nowrap;">- Let's see our campaigns</li>
-                  <li style="white-space: nowrap;">- How's the weather in Lahore?</li>
-                </ul>
-                <p style="margin-top: 10px">- Show me my products</p>
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h4>Meta Assistant</h4>
             </div>
-        </div>
-        <div class="chat-input">
-            <div class="input-group">
-                <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." autocomplete="off">
-                <button class="btn" id="voiceInputBtn" title="Voice Input">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="btn btn-primary" id="sendMessageBtn">
-                    <i class="fas fa-paper-plane"></i>
+            <div class="sidebar-body" style="flex: 1; overflow-y: auto;">
+                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 10px 15px; margin: 7px 10px 5px;">
+                    <div id="loggedInUser" style="font-size: 1.3em; color: #DCDDDEFF;"></div>
+                    <div id="loggedInUserMail" style="font-size: 0.8em; color: #898993; margin-top: 4px;"></div>
+                </div>
+                <hr style="border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin: 8px 20px;">
+
+                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 10px 15px; margin: 7px 10px 5px;">
+                    <button id="newChatBtn" class="btn btn-sm btn-primary"
+                            style="border-radius: 20px; padding: 6px 12px; width: 100%; margin-bottom: 10px; text-align: center;">
+                        Start New Chat <i class="fas fa-paper-plane"></i>
+                    </button>
+
+                    <button onclick="window.location.href='/prompt-generator'" class="btn btn-sm btn-primary"
+                            style="border-radius: 20px; padding: 6px 12px; width: 100%; text-align: center;background-color: #4e73df;border: none">
+                        Prompt Generator ✨
+                    </button>
+                </div>
+                <hr style="border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin: 8px 20px;">
+
+                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 15px; margin: 7px 10px 5px;">
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="speechToggle">
+                        <label class="form-check-label" for="speechToggle">🔈 Voice Mode</label>
+                    </div>
+
+                    <button id="stopSpeechBtn" class="btn btn-sm btn-secondary"
+                            style="border-radius: 20px; padding: 6px 12px; width: 100%; text-align: center;margin-top: 10px">
+                        Stop Speech
+                    </button>
+                </div>
+
+                <hr style="border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin: 8px 20px;">
+
+                <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 15px; margin: 10px 10px;">
+
+                    <h5 style="font-weight: normal; margin-bottom: 10px;">Previous Chats</h5>
+                    <hr style="border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin: 8px 20px;">
+
+                    <div class="sidebar-content" id="chatSessions" style="overflow-y: auto;max-height: 19.1rem">
+                        <!-- Chat sessions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+
+                <button id="logoutBtn" class="btn btn-sm btn-danger" style="margin: 0">
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
         </div>
-    </div>
 
-</div>
+
+        <!-- Main Chat Area -->
+        <!-- Update the chat-area div -->
+        <div class="chat-area">
+            <div class="chat-header d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary me-2 d-md-none" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h4 id="chatTitle" class="mb-0">New Chat</h4>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome message -->
+                <div class="welcome-message text-center py-2">
+                    <img src="/static/images/meta.png" alt="AI Assistant" class="mb-2" width="100">
+                    <div id="userWelcome" style="font-size: 1.3em; margin-top: 10px; margin-left: 20px"></div>
+                    <h4 style="margin-bottom: 90px">How can I help you today?</h4>
+                    <div style="background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px 15px; margin: 10px 10px; display: inline-block;">
+                        <p style=" font-size: 1.2em">Try asking me</p>
+                        <ul style="list-style: none; margin: 0; padding: 0; display: inline-flex; gap: 30px;">
+                            <li style="white-space: nowrap;">- Let's see our campaigns</li>
+                            <li style="white-space: nowrap;">- How's the weather in Lahore?</li>
+                        </ul>
+                        <p style="margin-top: 10px">- Show me my products</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="messageInput" placeholder="Type your message..."
+                           autocomplete="off">
+                    <button class="btn" id="voiceInputBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="btn btn-primary" id="sendMessageBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <div id="imageUploadModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h2>Upload Image</h2>
-        <input type="file" id="imageFileInput" accept="image/jpeg, image/png, image/gif">
-        <div class="image-preview-container">
-            <img id="imagePreview" src="#" alt="Image Preview" style="display: none;">
-        </div>
-        <div class="modal-buttons">
-            <button id="uploadImageConfirmButton" class="button-primary">Upload</button>
-            <button id="cancelImageUploadButton" class="button-secondary">Cancel</button>
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Upload Image</h2>
+            <input type="file" id="imageFileInput" accept="image/jpeg, image/png, image/gif">
+            <div class="image-preview-container">
+                <img id="imagePreview" src="#" alt="Image Preview" style="display: none;">
+            </div>
+            <div class="modal-buttons">
+                <button id="uploadImageConfirmButton" class="button-primary">Upload</button>
+                <button id="cancelImageUploadButton" class="button-secondary">Cancel</button>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="facebookImageUploadModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button" id="facebookModalCloseButton">&times;</span>
-        <h2>Upload Creative Image to Facebook</h2>
-        <input type="file" id="facebookImageFileInput" accept="image/jpeg, image/png">
-        <div class="image-preview-container">
-            <img id="facebookImagePreview" src="#" alt="Facebook Image Preview" style="display: none;">
-        </div>
-        <div class="modal-buttons">
-            <button id="uploadFacebookImageConfirmButton" class="button-primary">Upload to Facebook</button>
-            <button id="cancelFacebookImageUploadButton" class="button-secondary">Cancel</button>
+        <div class="modal-content">
+            <span class="close-button" id="facebookModalCloseButton">&times;</span>
+            <h2>Upload Creative Image to Facebook</h2>
+            <input type="file" id="facebookImageFileInput" accept="image/jpeg, image/png">
+            <div class="image-preview-container">
+                <img id="facebookImagePreview" src="#" alt="Facebook Image Preview" style="display: none;">
+            </div>
+            <div class="modal-buttons">
+                <button id="uploadFacebookImageConfirmButton" class="button-primary">Upload to Facebook</button>
+                <button id="cancelFacebookImageUploadButton" class="button-secondary">Cancel</button>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -7,8 +7,18 @@
             <div class="col-xl-10">
                 <div class="card rounded-3 text-black">
                     <div class="row g-0">
-                        {# Left Column: Form Elements Only #}
-                        <div class="col-lg-6">
+                        {# Right Column: Logo, Name, and Promotional Text - Order 1 on small, Order 2 on large #}
+                        <div class="col-lg-6 d-flex align-items-center justify-content-center gradient-custom-2 order-1 order-lg-2">
+                            <div class="text-black px-3 py-4 p-md-5 mx-md-4 text-center"> {# Added text-center here #}
+                                <img src="/static/images/meta.png"
+                                    style="width: 185px;" alt="logo" class="mb-4"> {# Added mb-4 for spacing #}
+                                <h4 class="mb-4" style="font-size: 2rem;">Meta Campaign Assistant</h4>
+                                <p class="small mb-0" style="font-size: 1rem;">Your personal smart campaign assistant</p>
+                            </div>
+                        </div>
+
+                        {# Left Column: Form Elements Only - Order 2 on small, Order 1 on large #}
+                        <div class="col-lg-6 order-2 order-lg-1">
                             <div class="card-body p-md-5 mx-md-4">
                                 <h2 class="text-center mb-4">Register</h2>
                                 <form id="registerForm">
@@ -41,16 +51,6 @@
                                     <p class="mb-0 me-2">Already have an account?</p>
                                     <a href="/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-danger">Login</a>
                                 </div>
-                            </div>
-                        </div>
-
-                        {# Right Column: Logo, Name, and Promotional Text #}
-                        <div class="col-lg-6 d-flex align-items-center justify-content-center gradient-custom-2">
-                            <div class="text-black px-3 py-4 p-md-5 mx-md-4 text-center"> {# Added text-center here #}
-                                <img src="/static/images/meta.png"
-                                    style="width: 185px;" alt="logo" class="mb-4"> {# Added mb-4 for spacing #}
-                                <h4 class="mb-4" style="font-size: 2rem;">Meta Campaign Assistant</h4>
-                                <p class="small mb-0" style="font-size: 1rem;">Your personal smart campaign assistant</p>
                             </div>
                         </div>
                     </div>

@@ -9,7 +9,6 @@ from app.tools.tool_list import declared_tool_list
 load_dotenv()
 
 
-
 def initialize_gemini_agent():
     llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=os.getenv("GEMINI_API_KEY"),temperature=TEMPERATURE)
 

@@ -29,6 +29,59 @@ document.addEventListener('DOMContentLoaded', function() {
     const loggedInUserMailElement = document.getElementById('loggedInUserMail');
     const userWelcomeElement = document.getElementById('userWelcome');
 
+    // Get references to the sidebar and chat area for toggling
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const chatArea = document.querySelector('.chat-area');
+
+    // --- Sidebar Toggle Logic ---
+    function setInitialSidebarState() {
+        if (!sidebar) return; // Defensive check
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('active'); // On mobile, ensure sidebar is hidden initially
+        } else {
+            sidebar.classList.remove('active'); // On desktop, ensure transform is off if it lingered
+        }
+    }
+
+    // Call on load and resize to set the correct initial state
+    setInitialSidebarState();
+    window.addEventListener('resize', setInitialSidebarState);
+
+    // Toggle sidebar visibility on button click
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent accidental closing if chatArea also has a listener
+            if (window.innerWidth <= 768 && sidebar) { // Only toggle on mobile screens
+                sidebar.classList.toggle('active');
+            }
+        });
+    }
+
+    // Close sidebar if clicked anywhere on the chat area (common mobile UX)
+    if (chatArea && sidebar) {
+        chatArea.addEventListener('click', () => {
+            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+    }
+
+    // Close sidebar if any interactive element inside sidebar is clicked
+    const sidebarBody = document.querySelector('.sidebar-body');
+    if (sidebarBody && sidebar) {
+        sidebarBody.addEventListener('click', (event) => {
+            // Check if the click was on a button, a link, or inside a chat-session div
+            if (event.target.tagName === 'BUTTON' || event.target.tagName === 'A' || event.target.closest('.chat-session')) {
+                if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                    // Use a small timeout to allow the click action to register before closing
+                    setTimeout(() => {
+                        sidebar.classList.remove('active');
+                    }, 100);
+                }
+            }
+        });
+    }
 
     // --- GLOBAL DOM ELEMENTS FOR MODAL ---
     const chatInput = document.getElementById('messageInput');
@@ -46,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadFacebookImageConfirmButton = document.getElementById('uploadFacebookImageConfirmButton');
     const cancelFacebookImageUploadButton = document.getElementById('cancelFacebookImageUploadButton');
     const facebookModalCloseButton = document.getElementById('facebookModalCloseButton');
-
 
     let currentSessionId = null;
     let recognition = null;
@@ -135,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 const userData = await response.json();
                 if (userData.name) {
-                    loggedInUserElement.textContent = `Welcome ${userData.name}`;
+                    loggedInUserElement.textContent = `Welcome, ${userData.name}`;
                     loggedInUserMailElement.textContent= userData.email;
                     userWelcomeElement.textContent = `Hey, ${userData.name}`
                 } else {
@@ -169,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionElement.innerHTML = `
                 <div class="session-title">${session.title}</div>
                 <button class="chat-session-delete" data-id="${session.id}">
-                    <i class="fas fa-trash"></i>
+                    <i class='fas fa-trash-alt' style='color: #cac9c9'></i>
                 </button>
             `;
             chatSessions.appendChild(sessionElement);

@@ -1,0 +1,277 @@
+      /* Define CSS Variables for Dark Mode */
+        :root {
+            --sidebar-bg-dark: #2c2f33;
+            --chat-area-bg-dark: #36393f;
+            --chat-header-bg-dark: #23272a;
+            --border-dark: #24262b;
+            --text-light-on-dark: #dcddde;
+            --text-muted-on-dark: #9da0aa;
+            --card-bg-dark: #2c2f33; /* Using sidebar-bg-dark for cards for consistency */
+            --prompt-output-bg-dark: #23272a; /* Using chat-header-bg-dark for prompt output */
+            --button-primary-dark: #4299e1; /* Keeping original blue for primary button */
+            --button-primary-hover-dark: #3182ce;
+            --copy-button-dark: #48bb78; /* Keeping original green for copy button */
+            --copy-button-hover-dark: #38a169;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .dark body {
+            background-color: var(--chat-area-bg-dark);
+        }
+
+        .sidebar {
+            width: 280px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.75rem;
+            flex-shrink: 0; /* Added: Prevent sidebar from shrinking */
+        }
+
+        .dark .sidebar {
+            background-color: var(--sidebar-bg-dark);
+            border-right: 1px solid var(--border-dark);
+            box-shadow: none;
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #1a202c;
+        }
+
+        .dark .sidebar-header {
+            color: var(--text-light-on-dark);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            color: #4a5568;
+        }
+
+        .dark .nav-item {
+            color: var(--text-muted-on-dark);
+        }
+
+        .nav-item:hover {
+            background-color: #f7fafc;
+            color: #3182ce;
+        }
+
+        .dark .nav-item:hover {
+            background-color: rgba(66, 153, 225, 0.2);
+            color: var(--text-light-on-dark);
+        }
+
+        .nav-item.active {
+            font-weight: 600;
+            background-color: #e0f2fe;
+            color: #2b6cb0;
+        }
+
+        .dark .nav-item.active {
+            background-color: rgba(66, 153, 225, 0.3);
+            color: var(--text-light-on-dark);
+        }
+
+        .nav-item i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;   /* Added: Make content scrollable vertically */
+            overflow-x: hidden; /* Added: Prevent horizontal scrolling */
+        }
+
+        .dark .main-content {
+            background-color: var(--chat-area-bg-dark);
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .dark .card {
+            background-color: var(--card-bg-dark);
+            box-shadow: none;
+        }
+
+        .main-content h1, .card h2 {
+            color: #2d3748;
+        }
+
+        .dark .main-content h1, .dark .card h2 {
+            color: var(--text-light-on-dark);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .dark .form-group label {
+            color: var(--text-light-on-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: #f7fafc;
+            color: #2d3748;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .dark .form-group input,
+        .dark .form-group select,
+        .dark .form-group textarea {
+            border: 1px solid var(--border-dark);
+            background-color: var(--chat-header-bg-dark);
+            color: var(--text-light-on-dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+            outline: none;
+        }
+
+        .dark .form-group input:focus,
+        .dark .form-group select:focus,
+        .dark .form-group textarea:focus {
+            border-color: var(--button-primary-dark);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        .button-primary {
+            background-color: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+        }
+
+        .dark .button-primary {
+            background-color: var(--button-primary-dark);
+        }
+
+        .button-primary:hover {
+            background-color: #3182ce;
+        }
+
+        .dark .button-primary:hover {
+            background-color: var(--button-primary-hover-dark);
+        }
+
+        .prompt-output {
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #2d3748;
+            position: relative;
+        }
+
+        .dark .prompt-output {
+            background-color: var(--prompt-output-bg-dark);
+            color: var(--text-light-on-dark);
+        }
+
+        .copy-button {
+            background-color: #48bb78;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            border: none;
+        }
+
+        .dark .copy-button {
+            background-color: var(--copy-button-dark);
+        }
+
+        .copy-button:hover {
+            background-color: #38a169;
+        }
+
+        .dark .copy-button:hover {
+            background-color: var(--copy-button-hover-dark);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                border-radius: 0.75rem 0.75rem 0 0;
+                padding-bottom: 1rem;
+            }
+            .dark .sidebar {
+                border-bottom: 1px solid var(--border-dark);
+            }
+            .sidebar-header {
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                padding: 1.5rem;
+                /* On small screens, you might want to adjust how main-content scrolls if it conflicts with overall page scroll */
+                /* For now, inherit from larger screen definition */
+            }
+        }
