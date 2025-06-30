@@ -1,4 +1,4 @@
-# AI Marketing Assistant Chat Interface
+# AI Facebook Marketing Assistant 
 
 This project provides a chat-based interface for an AI Marketing Assistant, designed to help users create and manage Facebook advertising campaigns, ad sets, and products through natural language prompts. The system leverages **LangChain with tool calling** for intelligent response generation, a **SQLite backend** for data storage (authentication and chat history), and a **FastAPI backend with Uvicorn** to serve the application and handle API requests. The front-end is a dynamic web interface offering **voice input and output capabilities**.
 
